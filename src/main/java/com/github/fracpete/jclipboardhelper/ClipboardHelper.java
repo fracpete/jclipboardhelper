@@ -190,6 +190,9 @@ public class ClipboardHelper {
 
   /**
    * Obtains a BufferedImage from the clipboard.
+   * <br>
+   * Taken from:
+   * http://rsbweb.nih.gov/ij/developer/source/ij/plugin/Clipboard.java.html
    *
    * @return		the obtained image, null if not available
    * @see		BufferedImage#TYPE_INT_RGB
