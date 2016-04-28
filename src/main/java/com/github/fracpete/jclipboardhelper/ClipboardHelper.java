@@ -23,6 +23,7 @@ import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -68,7 +69,8 @@ public class ClipboardHelper {
   /**
    * Copies the given JComponent as image to the system's clipboard.
    *
-   * @param comp		the component to copy
+   * @param comp	the component to copy
+   * @see		BufferedImage#TYPE_INT_RGB
    */
   public static void copyToClipboard(JComponent comp) {
     BufferedImage img;
@@ -85,7 +87,7 @@ public class ClipboardHelper {
   /**
    * Copies the given JTable as text to the system's clipboard.
    *
-   * @param table		the table to copy
+   * @param table	the table to copy
    */
   public static void copyToClipboard(JTable table) {
     Action copy;
@@ -124,6 +126,15 @@ public class ClipboardHelper {
    */
   public static boolean canPasteStringFromClipboard() {
     return canPasteFromClipboard(DataFlavor.stringFlavor);
+  }
+
+  /**
+   * Checks whether a string can be obtained from the clipboard.
+   *
+   * @return		true if string can be obtained, false if not available
+   */
+  public static boolean canPasteImageFromClipboard() {
+    return canPasteFromClipboard(DataFlavor.imageFlavor);
   }
 
   /**
@@ -177,4 +188,30 @@ public class ClipboardHelper {
     return result;
   }
 
+  /**
+   * Obtains a BufferedImage from the clipboard.
+   *
+   * @return		the obtained image, null if not available
+   * @see		BufferedImage#TYPE_INT_RGB
+   */
+  public static BufferedImage pasteImageFromClipboard() {
+    java.awt.image.BufferedImage	result;
+    Image 				img;
+    int 				width;
+    int 				height;
+    Graphics 				g;
+
+    result = null;
+    img    = (Image) pasteFromClipboard(DataFlavor.imageFlavor);
+    if (img != null) {
+      width  = img.getWidth(null);
+      height = img.getHeight(null);
+      result = new java.awt.image.BufferedImage(width, height, java.awt.image.BufferedImage.TYPE_INT_RGB);
+      g      = result.createGraphics();
+      g.drawImage(img, 0, 0, null);
+      g.dispose();
+    }
+
+    return result;
+  }
 }
