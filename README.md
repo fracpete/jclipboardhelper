@@ -9,7 +9,7 @@ You can use the following dependency in your `pom.xml`:
 <dependency>
   <groupId>com.github.fracpete</groupId>
   <artifactId>jclipboardhelper</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
 </dependency>
 ```
 
