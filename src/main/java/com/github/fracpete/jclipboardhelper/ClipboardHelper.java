@@ -15,7 +15,7 @@
 
 /**
  * ClipboardHelper.java
- * Copyright (C) 2016 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2016-2017 University of Waikato, Hamilton, New Zealand
  */
 package com.github.fracpete.jclipboardhelper;
 
@@ -39,13 +39,41 @@ import java.awt.image.BufferedImage;
  */
 public class ClipboardHelper {
 
+  /** instance of toolkit. */
+  protected static Toolkit m_Toolkit;
+
+  /** instance of clipboard. */
+  protected static Clipboard m_Clipboard;
+
+  /**
+   * Returns the toolkit instance.
+   *
+   * @return		the instance
+   */
+  public static synchronized Toolkit getToolkit() {
+    if (m_Toolkit == null)
+      m_Toolkit = Toolkit.getDefaultToolkit();
+    return m_Toolkit;
+  }
+
+  /**
+   * Returns the system clipboard instance.
+   *
+   * @return		the instance
+   */
+  public static synchronized Clipboard getSystemClipboard() {
+    if (m_Clipboard == null)
+      m_Clipboard = getToolkit().getSystemClipboard();
+    return m_Clipboard;
+  }
+
   /**
    * Copies the given transferable to the system's clipboard.
    *
    * @param t		the transferable to copy
    */
   public static void copyToClipboard(Transferable t) {
-    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
+    getSystemClipboard().setContents(t, null);
   }
 
   /**
@@ -77,11 +105,12 @@ public class ClipboardHelper {
     Graphics g;
 
     img  = new BufferedImage(comp.getWidth(), comp.getHeight(), BufferedImage.TYPE_INT_RGB);
-    g    = img.getGraphics();
+    g    = img.createGraphics();
     g.setPaintMode();
     g.fillRect(0, 0, comp.getWidth(), comp.getHeight());
     comp.printAll(g);
     copyToClipboard(img);
+    g.dispose();
   }
 
   /**
@@ -105,12 +134,10 @@ public class ClipboardHelper {
    * @return		true if the data can be obtained, false if not available
    */
   public static boolean canPasteFromClipboard(DataFlavor flavor) {
-    Clipboard clipboard;
     boolean		result;
 
     try {
-      clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-      result    = clipboard.isDataFlavorAvailable(flavor);
+      result = getSystemClipboard().isDataFlavorAvailable(flavor);
     }
     catch (Exception e) {
       result = false;
@@ -144,15 +171,13 @@ public class ClipboardHelper {
    * @return		the obtained object, null if not available
    */
   public static Object pasteFromClipboard(DataFlavor flavor) {
-    Clipboard 		clipboard;
     Object		result;
     Transferable	content;
 
     result = null;
 
     try {
-      clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-      content   = clipboard.getContents(null);
+      content = getSystemClipboard().getContents(null);
       if ((content != null) && (content.isDataFlavorSupported(flavor)))
 	result = content.getTransferData(flavor);
     }
@@ -169,15 +194,13 @@ public class ClipboardHelper {
    * @return		the obtained string, null if not available
    */
   public static String pasteStringFromClipboard() {
-    Clipboard 		clipboard;
     String		result;
     Transferable	content;
 
     result = null;
 
     try {
-      clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-      content   = clipboard.getContents(null);
+      content = getSystemClipboard().getContents(null);
       if ((content != null) && (content.isDataFlavorSupported(DataFlavor.stringFlavor)))
 	result = (String) content.getTransferData(DataFlavor.stringFlavor);
     }
@@ -198,18 +221,18 @@ public class ClipboardHelper {
    * @see		BufferedImage#TYPE_INT_RGB
    */
   public static BufferedImage pasteImageFromClipboard() {
-    java.awt.image.BufferedImage	result;
-    Image 				img;
-    int 				width;
-    int 				height;
-    Graphics 				g;
+    BufferedImage	result;
+    Image 		img;
+    int 		width;
+    int 		height;
+    Graphics 		g;
 
     result = null;
     img    = (Image) pasteFromClipboard(DataFlavor.imageFlavor);
     if (img != null) {
       width  = img.getWidth(null);
       height = img.getHeight(null);
-      result = new java.awt.image.BufferedImage(width, height, java.awt.image.BufferedImage.TYPE_INT_RGB);
+      result = new BufferedImage(width, height, java.awt.image.BufferedImage.TYPE_INT_RGB);
       g      = result.createGraphics();
       g.drawImage(img, 0, 0, null);
       g.dispose();
