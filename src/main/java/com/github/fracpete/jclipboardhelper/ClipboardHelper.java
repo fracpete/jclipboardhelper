@@ -13,9 +13,9 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
+/*
  * ClipboardHelper.java
- * Copyright (C) 2016-2017 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2016-2018 University of Waikato, Hamilton, New Zealand
  */
 package com.github.fracpete.jclipboardhelper;
 
@@ -28,6 +28,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 
@@ -35,7 +36,6 @@ import java.awt.image.BufferedImage;
  * Helper class for dealing with the system clipboard.
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
- * @version $Revision: 4584 $
  */
 public class ClipboardHelper {
 
@@ -179,7 +179,7 @@ public class ClipboardHelper {
     try {
       content = getSystemClipboard().getContents(null);
       if ((content != null) && (content.isDataFlavorSupported(flavor)))
-	result = content.getTransferData(flavor);
+        result = content.getTransferData(flavor);
     }
     catch (Exception e) {
       result = null;
@@ -202,7 +202,7 @@ public class ClipboardHelper {
     try {
       content = getSystemClipboard().getContents(null);
       if ((content != null) && (content.isDataFlavorSupported(DataFlavor.stringFlavor)))
-	result = (String) content.getTransferData(DataFlavor.stringFlavor);
+        result = (String) content.getTransferData(DataFlavor.stringFlavor);
     }
     catch (Exception e) {
       result = null;
@@ -239,5 +239,24 @@ public class ClipboardHelper {
     }
 
     return result;
+  }
+
+  /**
+   * For clearing the clipboard.
+   * <br>
+   * Taken from here: https://stackoverflow.com/a/18254944/4698227
+   */
+  public static void clearClipboard() {
+    getSystemClipboard().setContents(new Transferable() {
+      public DataFlavor[] getTransferDataFlavors() {
+        return new DataFlavor[0];
+      }
+      public boolean isDataFlavorSupported(DataFlavor flavor) {
+        return false;
+      }
+      public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+        throw new UnsupportedFlavorException(flavor);
+      }
+    }, null);
   }
 }
