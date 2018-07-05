@@ -1,19 +1,19 @@
-# jclipboardhelper #
+# jclipboardhelper
 
 Helper library for dealing with the sytem's clipboard in Java.
 
-## Maven ##
+## Maven
 
 You can use the following dependency in your `pom.xml`:
 ```xml
 <dependency>
   <groupId>com.github.fracpete</groupId>
   <artifactId>jclipboardhelper</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
 </dependency>
 ```
 
-## Supported formats ##
+## Supported formats
 
 * Copy to clipboard
 
@@ -30,7 +30,7 @@ You can use the following dependency in your `pom.xml`:
   * `java.awt.datatransfer.Transferable` -- returns just an `Object`
 
 
-## Example usage ##
+## Example usage
 
 Example code for copying data to the clipboard:
 
@@ -59,4 +59,12 @@ if (ClipboardHelper.canPasteStringFromClipboard()) {
 if (ClipboardHelper.canPasteImageFromClipboard()) {
   BufferedImage img = ClipboardHelper.pasteImageFromClipboard();
 }
+```
+
+Example for clearing the clipboard:
+
+```java
+import com.github.fracpete.jclipboardhelper.ClipboardHelper;
+...
+ClipboardHelper.clearClipboard();
 ```
